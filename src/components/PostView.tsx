@@ -5,8 +5,8 @@ interface PostViewProps {
 }
 const PostView = (props: PostViewProps) => {
     return (
-      <div className="overflow-scroll fixed w-full h-full top-0 flex items-center justify-center bg-black-75">
-        <div className="bg-white max-w-sm rounded overflow-hidden shadow-lg">
+      <div className="fixed w-full h-full top-0 overflow-scroll bg-black-75">
+        <div className="bg-white my-4 mx-auto max-w-sm rounded shadow-lg">
           <img className="w-full" src={props.post.imageUrl} alt={props.post.title} />
           <div className="px-6 py-4">
             <h1 className="font-bold text-xl mb-2">{props.post.title}</h1>
@@ -22,12 +22,12 @@ const PostView = (props: PostViewProps) => {
             </a>
           </div>
           <div className="px-6 py-4">
-            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">Updated on {props.post.updatedAt}</span>
+            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">Updated on {props.post.updatedAt}</span>
             <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">Created on {props.post.createdAt}</span>
           </div>
           <div className="bg-teal-500 text-center py-4 lg:px-4">
-          <button
-            className="bg-transparent hover:bg-teal-700 text-white font-semibold py-2 px-4 rounded"
+            <button
+              className="bg-transparent hover:bg-teal-700 text-white font-semibold py-2 px-4 rounded"
               onClick={props.onClose}
             >
               Close

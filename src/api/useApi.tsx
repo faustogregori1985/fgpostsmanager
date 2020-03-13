@@ -1,13 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-
-interface Payload {
-    title: string,
-    content: string,
-    lat: string,
-    long: string,
-    image_url: string  
-}
+import { Payload } from '../utils/types';
 
 interface ApiState {
     posts: any[],
@@ -58,15 +51,22 @@ export default function useApi() {
                 return false;
             }
         },
-        async update(id: string, data: Payload) {
+        async update(data: Payload) {
             try {
                 setState(currentState => ({
                     ...currentState,
                     isLoading: true
                 }));
-                const response = await axios.put(`${endpoint}/api/v1/posts/${id}`);
+                const response = await axios.put(`${endpoint}/api/v1/posts/${data.id}`, data);
                 console.log(response);
-                return response;
+                setState(currentState => ({
+                    ...currentState,
+                    isLoading: false,
+                    posts: currentState.posts.map(post => {
+                        return post.id === data.id ? response.data : post;
+                    })
+                }));
+                return true;
             } catch (error) {
                 console.error(error);
                 return false;

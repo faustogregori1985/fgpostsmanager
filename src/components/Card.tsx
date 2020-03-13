@@ -18,15 +18,15 @@ const Card = (props: CardProps) => {
     const [state, setState] = useState({
         showActions: false
     });
-    function toggleActionOverlay() {
-        setState(currentState => ({
-            showActions: !currentState.showActions
-        }));
+    function setActionOverlay(status: boolean) {
+        setState({
+            showActions: status
+        });
     }
     return (
         <div
-            onMouseEnter={toggleActionOverlay}
-            onMouseLeave={toggleActionOverlay}
+            onMouseEnter={() => setActionOverlay(true)}
+            onMouseLeave={() => setActionOverlay(false)}
             className="relative flex flex-col content-streach max-w-sm rounded overflow-hidden shadow-lg">
             {
                 state.showActions && (

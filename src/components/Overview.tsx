@@ -1,77 +1,124 @@
-import React, { useEffect, useState } from 'react';
-import moment from 'moment';
-import Header from './Header';
-import Card from './Card';
-import PostView from './PostView';
-import useApi from '../api/useApi';
+import React, { useEffect, useState } from "react";
+import moment from "moment";
+import { PostType, Payload } from "../utils/types";
+import Header from "./Header";
+import Card from "./Card";
+import PostView from "./PostView";
+import Form from "./Form";
+import useApi from "../api/useApi";
 
 export interface OverviewProps {}
 
 interface OverviewState {
-    selectedPost: any
+  selectedPost: any,
+  action: string,
+  error: string
 }
 
-const Overview = (props: OverviewProps)=> {
-    const [state, setState] = useState<OverviewState>({
-        selectedPost: null
-    });
-    const { posts, fetch, create, remove } = useApi();
+const VIEW_POST_ACTION = "VIEW";
+const CREATE_POST_ACTION = "CREATE";
+const EDIT_POST_ACTION = "EDIT";
 
-    useEffect(function fetchPosts() {
-        fetch();
+const Overview = (props: OverviewProps) => {
+  const [state, setState] = useState<OverviewState>({
+    selectedPost: null,
+    action: '',
+    error: ''
+  });
+  const { posts, isLoading, fetch, create, update, remove } = useApi();
+
+  useEffect(
+    function fetchPosts() {
+      fetch();
     },
     // eslint-disable-next-line
-    []);
-    
-    async function handleCreate() {
-        const payload = {
-            title: 'Ferrara',
-            content: `Ferrara è una città situata in Emilia-Romagna.
-            È nota per gli edifici eretti nel Rinascimento dagli Este,
-            signori della città, tra cui il Castello Estense,
-            dalle stanze lussuose, il Palazzo dei Diamanti,
-             sede della Pinacoteca Nazionale di Ferrara e caratterizzato dalla facciata
-             rivestita in blocchi di marmo a forma di diamante,
-             e infine la Cattedrale di Ferrara, con facciata romanica a tre cuspidi e campanile in marmo.`,
-            lat: '44.84346',
-            long: '11.60868',
-            image_url: 'https://live.staticflickr.com/7546/15480451774_44101b99e2_k.jpg'  
-        };
-        create(payload);
-    }
-    function handleDelete(id: string) {
-        remove(id);
-    }
-    function handleViewPost(post: { id?: string; title: any; content: any; image_url: any; updated_at?: string; created_at?: string; long: any; lat: any; }) {
-        const createdAt = moment(post.created_at).format('LL');
-        const updatedAt = moment(post.updated_at).format('LL');
+    []
+  );
+
+  function transformApiPost(post: PostType) {
+    const createdAt = moment(post.created_at).format("LL");
+    const updatedAt = moment(post.updated_at).format("LL");
+    return {
+        id: post.id,
+        title: post.title,
+        content: post.content,
+        imageUrl: post.image_url,
+        updatedAt: updatedAt,
+        createdAt: createdAt,
+        lng: post.long,
+        lat: post.lat,
+    };
+  }
+
+  async function handleCreate(newPost: Payload) {
+    create(newPost);
+  }
+
+  function handleDelete(id: string) {
+    remove(id);
+  }
+  
+  function handleUpdate(post: Payload) {
+    if(update(post)) {
+        handleOnClose();
+    } else {
         setState(currentState => ({
             ...currentState,
-            selectedPost: {
-                title: post.title,
-                content: post.content,
-                imageUrl: post.image_url,
-                updatedAt: updatedAt,
-                createdAt: createdAt,
-                lng: post.long,
-                lat: post.lat,
-            }
+            error: 'An error occurred, post not updated!'
         }));
     }
-    function handleOnViewClose() {
-        setState(currentState => ({
-            ...currentState,
-            selectedPost: null
-        }));
-    }
-    return (
-        <div>
-            <Header 
-                onCreate={handleCreate}
-            />
-            <div className="container mx-auto py-4 px-4">
-                <div 
-                    className="
+  }
+
+  function handleViewPost(post: PostType) {
+    setState(currentState => ({
+      ...currentState,
+      selectedPost: transformApiPost(post),
+      action: VIEW_POST_ACTION
+    }));
+  }
+
+  function handleEditPost(post: PostType) {
+    setState(currentState => ({
+      ...currentState,
+      selectedPost: transformApiPost(post),
+      action: EDIT_POST_ACTION
+    }));
+  }
+
+  function handleCreatePost() {
+    setState(currentState => ({
+      ...currentState,
+      selectedPost: null,
+      action: CREATE_POST_ACTION
+    }));
+  }
+
+  function handleOnClose() {
+    setState(currentState => ({
+      ...currentState,
+      selectedPost: null,
+      action: "",
+      error: ''
+    }));
+  }
+
+  return (
+    <div>
+      <Header onCreate={handleCreatePost} />
+      <div className="container mx-auto py-4 px-4">
+        {posts.length === 0 && !isLoading && (
+            <div className="flex flex-col items-center justify-center">
+                <h1 className="text-4xl text-teal-700 my-4">No Posts Available</h1>
+                <button
+                    className="text-white bg-teal-700 hover:bg-teal-500 hover:text-white font-semibold py-2 px-4 rounded"
+                    onClick={handleCreatePost}
+                >
+                    Create The First Post!
+                </button> 
+            </div>
+        )}
+        <div
+          className="
                     grid
                     grid-cols-1
                     sm:grid-cols-2
@@ -79,39 +126,49 @@ const Overview = (props: OverviewProps)=> {
                     lg:grid-cols-4
                     gap-4
                     "
-                    >
-                    {
-                        posts.map((post: { id: string; title: string; content: string; image_url: string; updated_at: string; created_at: string; long: string; lat: string; }) => {
-                            const createdAt = moment(post.created_at).format('LL');
-                            const updatedAt = moment(post.updated_at).format('LL');
-                            return (
-                                <Card
-                                id={post.id}
-                                title={post.title}
-                                content={post.content}
-                                imageUrl={post.image_url}
-                                updatedAt={updatedAt}
-                                createdAt={createdAt}
-                                lng={post.long}
-                                lat={post.lat}
-                                onView={() => handleViewPost(post)}
-                                onEdit={() => {}}
-                                onDelete={() => handleDelete(post.id)}
-                                />
-                                );
-                            }) 
-                        }
-                </div>
-            </div>
-            {   state.selectedPost && (
-                    <PostView
-                        post={state.selectedPost}
-                        onClose={handleOnViewClose}
-                    />
-                )
-            }    
+        >   
+          {posts.map((post: PostType) => {
+            const createdAt = moment(post.created_at).format("LL");
+            const updatedAt = moment(post.updated_at).format("LL");
+            return (
+              <Card
+                id={post.id}
+                title={post.title}
+                content={post.content}
+                imageUrl={post.image_url}
+                updatedAt={updatedAt}
+                createdAt={createdAt}
+                lng={post.long}
+                lat={post.lat}
+                onView={() => handleViewPost(post)}
+                onEdit={() => handleEditPost(post)}
+                onDelete={() => handleDelete(post.id)}
+              />
+            );
+          })}
         </div>
-    )
-}
+      </div>
+      {state.selectedPost && state.action === VIEW_POST_ACTION && (
+        <PostView post={state.selectedPost} onClose={handleOnClose} />
+      )}
+      {state.action === CREATE_POST_ACTION && (
+        <Form error={state.error} onCancel={handleOnClose} onSave={handleCreate} />
+      )}
+      {state.selectedPost && state.action === EDIT_POST_ACTION && (
+        <Form 
+            id={state.selectedPost.id}
+            title={state.selectedPost.title}
+            content={state.selectedPost.content}
+            lat={state.selectedPost.lat}
+            lng={state.selectedPost.lng}
+            imageUrl={state.selectedPost.imageUrl}
+            error={state.error}
+            onCancel={handleOnClose}
+            onSave={handleUpdate}
+        />
+      )}
+    </div>
+  );
+};
 
 export default Overview;
