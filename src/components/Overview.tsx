@@ -118,6 +118,7 @@ const Overview = (props: OverviewProps) => {
             </div>
         )}
         <div
+          data-testid="post-list"
           className="
                     grid
                     grid-cols-1
@@ -127,11 +128,12 @@ const Overview = (props: OverviewProps) => {
                     gap-4
                     "
         >   
-          {posts.map((post: PostType) => {
+          {posts.map((post: PostType, index: number) => {
             const createdAt = moment(post.created_at).format("LL");
             const updatedAt = moment(post.updated_at).format("LL");
             return (
               <Card
+                key={`post-${index}`}
                 id={post.id}
                 title={post.title}
                 content={post.content}

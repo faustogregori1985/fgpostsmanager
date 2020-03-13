@@ -10,6 +10,7 @@ const Header = (props: HeaderProps) => {
             <div className="container mx-auto flex items-center justify-between flex-wrap  p-6">
                 <h1 className="text-white font-semibold text-xl tracking-tight">Posts</h1>
                 <button
+                    data-testid="header-create-post-button"
                     className="
                         text-sm
                         px-4

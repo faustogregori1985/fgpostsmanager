@@ -27,7 +27,6 @@ export default function useApi() {
                     posts: response.data,
                     isLoading: false
                 }));
-                console.log(response);
             } catch (error) {
                 console.error(error);
             }
@@ -39,7 +38,6 @@ export default function useApi() {
                     isLoading: true
                 }));
                 const response = await axios.post(`${endpoint}/api/v1/posts`, data);
-                console.log(response);
                 setState(currentState => ({
                     ...currentState,
                     posts: [...currentState.posts, response.data],
@@ -84,7 +82,6 @@ export default function useApi() {
                     posts: currentState.posts.filter(current => current.id !== id),
                     isLoading: false
                 }));
-                console.log(response);
                 return true;
             } catch (error) {
                 console.error(error);

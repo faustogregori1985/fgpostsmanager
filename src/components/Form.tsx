@@ -42,7 +42,10 @@ const Form = (props: FormProps) => {
     }
 
     return (
-        <div className="fixed w-full h-full top-0 overflow-scroll bg-black-75">
+        <div
+            data-testid={props.id ? `edit-post-${props.id}` : 'create-new-post'}
+            className="fixed w-full h-full top-0 overflow-scroll bg-black-75"
+        >
             <div className="bg-white my-4 mx-auto max-w-sm rounded shadow-lg">
               <div className="bg-teal-500 py-4 lg:px-4">
                     <h1 className="text-white font-semibold text-xl tracking-tight">
@@ -60,11 +63,13 @@ const Form = (props: FormProps) => {
                         <input 
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             id="title"
+                            data-testid="post-title-input"
                             type="text"
                             placeholder="Post title"
                             value={state.title}
                             onChange={event => updateField('title', event.target.value)}
                             autoFocus
+                            required
                         />
                     </div>
                     <div className="mb-4">
@@ -77,7 +82,9 @@ const Form = (props: FormProps) => {
                         <textarea 
                             className="h-48 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             id="content"
+                            data-testid="post-content-textarea"
                             value={state.content}
+                            required
                             onChange={event => updateField('content', event.target.value)}
                         />
                     </div>
@@ -132,12 +139,14 @@ const Form = (props: FormProps) => {
                     </div>
                     <div className="text-right">
                         <button
+                            data-testid={props.id ? `edit-post-${props.id}'-cancel-button` : 'create-new-post-cancel-button'}
                             className="text-teal-500 hover:text-teal-700 font-semibold py-2 px-4 rounded mr-2"
                             onClick={props.onCancel}
                         >
                             Cancel
                         </button>
                         <button
+                            data-testid={props.id ? `edit-post-${props.id}'-save-button` : 'create-new-post-save-button'}
                             className="bg-teal-500 hover:bg-teal-700 text-white font-semibold py-2 px-4 rounded"
                             onClick={handleSave}
                         >

@@ -25,6 +25,7 @@ const Card = (props: CardProps) => {
     }
     return (
         <div
+            data-testid={`post-${props.id}`}
             onMouseEnter={() => setActionOverlay(true)}
             onMouseLeave={() => setActionOverlay(false)}
             className="relative flex flex-col content-streach max-w-sm rounded overflow-hidden shadow-lg">
